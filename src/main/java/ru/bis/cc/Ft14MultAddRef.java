@@ -49,7 +49,9 @@ public class Ft14MultAddRef {
                         j++;
                     }
                 }
+                FileHelper.showMessage("Обработка завершена успешно !", "",false);
             } catch (IOException e) {
+                FileHelper.showMessage("Произошла ошибка !", "Ошибка", true);
                 e.printStackTrace();
             }
         }
@@ -87,7 +89,7 @@ public class Ft14MultAddRef {
     private static void addReference(StringBuilder line, Integer i, RefType refType) {
         //если референс уже есть, отрезаем его
         if (line.length() > REF_OFFSET - 1) {
-            line.replace(REF_OFFSET, line.length(), "");
+            line.replace(REF_OFFSET - 1, line.length(), "");
         }
         //дополняем строку пробелами до нужной длины
         while (line.length() < REF_OFFSET - 1) {

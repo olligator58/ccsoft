@@ -7,8 +7,8 @@ import java.nio.charset.Charset;
 import java.nio.file.Path;
 
 public class Ft14ToPainConverter {
-    private static final String SOURCE_CODEPAGE = "Cp1251"; //Cp866 הכÿ DOS, Cp1251 הכÿ Windows-1251, KOI8_R הכÿ ÊÎÈ-8
-    private static final String DEST_CODEPAGE = "Cp1251";
+    private static final String SOURCE_CODEPAGE = "ISO8859_5"; //Cp866 הכÿ DOS, Cp1251 הכÿ Windows-1251, KOI8_R הכÿ ÊÎÈ-8
+    private static final String DEST_CODEPAGE = "UTF-8";
 
     public static void main(String[] args) {
         String sourcePath = FileHelper.chooseSourceFile("Âûבונטעו פאיכ FT14");
@@ -45,11 +45,11 @@ public class Ft14ToPainConverter {
 
     }
 
-    private static String getDestinationFile(String sourceFile) {
+    /*private static String getDestinationFile(String sourceFile) {
         String sourceFileName = Path.of(sourceFile).getFileName().toString();
         int pointIndex = sourceFileName.indexOf(".");
         String destFileName = sourceFileName.substring(0, pointIndex) + "_copy." +
                 sourceFileName.substring(pointIndex + 1);
         return Path.of(sourceFile).getParent().resolve(Path.of(destFileName)).toString();
-    }
+    }*/
 }

@@ -1,5 +1,8 @@
 package ru.bis.cc.makeinitialoperations;
 
+import ru.bis.cc.utils.PayerInfo;
+import ru.bis.cc.utils.PayerInfoType;
+
 public class InitialOperation103 {
     private static final String PAYER_INN = "776521543603";
     private static final String MT103_SOURCE = "MT103";
@@ -25,7 +28,10 @@ public class InitialOperation103 {
         amount = findAmount(line.substring(115, 133).trim());
         payerAccount = line.substring(380, 400).trim();
         payerName = line.substring(592, 752).trim();
-        payerInn = PAYER_INN;
+        payerInn = PayerInfo.getPayerInfo(payerAccount, PayerInfoType.INN);
+        if (payerInn.isBlank()) {
+            payerInn = PAYER_INN;
+        }
         payeeAccount = line.substring(1764, 1784).trim();
         payeeName = line.substring(1827, 1987).trim();
         payeeInn = findPayeeInn(line.substring(1795, 1807).trim());
@@ -60,7 +66,7 @@ public class InitialOperation103 {
     }
 
     public String getPayerInn() {
-        return PAYER_INN;
+        return payerInn;
     }
 
     public String getPayeeAccount() {

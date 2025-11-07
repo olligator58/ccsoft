@@ -38,7 +38,9 @@ public class MakeInitialOperations103 {
                         writer.println(modline);
                     }
                 }
+                FileHelper.showMessage("Обработка завершена успешно !", "", false);
             } catch (IOException e) {
+                FileHelper.showMessage("Произошла ошибка !", "Ошибка", true);
                 e.printStackTrace();
             }
         }

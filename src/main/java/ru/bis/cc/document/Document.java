@@ -1,16 +1,18 @@
 package ru.bis.cc.document;
 
+import ru.bis.cc.utils.CodeWordsExtractor;
+import ru.bis.cc.utils.PayerInfo;
+import ru.bis.cc.utils.PayerInfoType;
+
 import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Document {
     private static final String OUR_CORR_ACCT = "30102810300000000101";
-    private final Map<String, String> payerData = new HashMap<>();
-
-    enum DataType {
-        NAME, INN
-    }
+    private static final Pattern taxPattern1 = Pattern.compile("//(\\d*)/(\\d*)/(\\d*)/(\\d*)/([А-Я]*)/([А-Я\\d.]*)/([\\d;\\-№]*)/([\\d.]*)/?(.*)?/");
+    //проверить нужна ли здесь обработка поля 110
+    private static final Pattern taxPattern2 = Pattern.compile("\\\\\\\\(\\d*)\\\\(\\d*)\\\\(\\d*)\\\\(\\d*)\\\\([А-Я]*)\\\\([А-Я\\d\\.]*)\\\\([\\d;\\-№]*)\\\\([\\d\\.]*)\\\\");
 
     private String number;
     private LocalDate date;
@@ -18,69 +20,40 @@ public class Document {
     private String debitAcct;
     private String creditAcct;
     private String amount;
+    private String payerAccount;
     private String payerName;
     private String payerInn;
+    private String dirtyPurpose;
+    private String purpose;
+    private String tax101;
+    private String tax102;
+    private String tax103;
+    private String tax104;
+    private String tax105;
+    private String tax106;
+    private String tax107;
+    private String tax108;
+    private String tax109;
+    private String tax110;
 
     public Document buildDocument(String line) {
-        preparePayersRequisites();
         Document document = new Document();
-        this.number = line.substring(370, 380).trim();
-        this.date = parseDate(line.substring(336, 344).trim());
-        this.deliveryType = (line.startsWith("CLMOS")) ? "Электронно" : "Срочно";
-        this.debitAcct = line.substring(380, 400).trim();
-        this.creditAcct = OUR_CORR_ACCT;
-        this.amount = formatAmount(line.substring(115, 133).trim());
-        this.payerName = getPayerData(this.debitAcct, DataType.NAME);
-        this.payerInn = getPayerData(this.debitAcct, DataType.INN);
-        return document;
-    }
-
-    private String getPayerData(String account, DataType dataType) {
-        String result = "";
-        String value = payerData.get(account);
-        if (value != null) {
-            String[] data = value.split(";");
-            int index = (dataType == DataType.NAME) ? 0 : 1;
-            result = data[index];
+        number = line.substring(370, 380).trim();
+        date = parseDate(line.substring(336, 344).trim());
+        deliveryType = (line.startsWith("CLMOS")) ? "Электронно" : "Срочно";
+        debitAcct = line.substring(380, 400).trim();
+        creditAcct = OUR_CORR_ACCT;
+        amount = formatAmount(line.substring(115, 133).trim());
+        payerAccount = debitAcct;
+        payerName = line.substring(592, 752).trim();
+        dirtyPurpose = line.substring(2124, Math.min(line.length(), 2264)).trim() + line.substring(1364, 1564).trim();
+        payerInn = CodeWordsExtractor.getInn(dirtyPurpose);
+        if (payerInn.isBlank()) {
+            payerInn = PayerInfo.getPayerInfo(payerAccount, PayerInfoType.INN);
         }
-        return result;
-    }
+        purpose = CodeWordsExtractor.removeInn(dirtyPurpose);
 
-    private void preparePayersRequisites() {
-        payerData.put("40817810800000000009", "Дорохов Иван Петрович;776521543603");
-        payerData.put("42301810900000000002", "Дорохов Иван Петрович;776521543603");
-        payerData.put("40817810200000000010", "Строганова Алла Васильевна;776589845449");
-        payerData.put("40820810000000000003", "Мусагалиев Галымжан Орынбасарович;773265856597");
-        payerData.put("40820810300000000004", "Тэйвз Джонатан;774325653268");
-        payerData.put("40817810100000000013", "Кривко Жанна Аркадьевна;770565351400");
-        payerData.put("40802810400000000003", "Кривко Жанна Аркадьевна;770565351400");
-        payerData.put("40802810700000000004", "Балоян Фрунзик Ашотович;770165258750");
-        payerData.put("40817810400000000014", "Балоян Фрунзик Ашотович;770165258750");
-        payerData.put("40802810000000000005", "Клименко Тарас Семенович;770863254530");
-        payerData.put("40820810600000000005", "Клименко Тарас Семенович;770863254530");
-        payerData.put("40702810100000001350", "АО открытого типа Вертикаль;7705625484");
-        payerData.put("40701810400000000201", "АО открытого типа Вертикаль;7705625484");
-        payerData.put("40702810400000001351", "АО открытого типа Вертикаль;7705625484");
-        payerData.put("40702810500000001361", "АО открытого типа Вертикаль;7705625484");
-        payerData.put("40702810700000001352", "Закрытое акционерное общество Веселый молочник;5834652323");
-        payerData.put("40702810000000001353", "Закрытое акционерное общество Веселый молочник;5834652323");
-        payerData.put("40701810700000000202", "Закрытое акционерное общество Веселый молочник;5834652323");
-        payerData.put("40807810900000000045", "Совместное предприятие Фаргус;7728651480");
-        payerData.put("40807810200000000046", "Совместное предприятие Фаргус;7728651480");
-        payerData.put("40807810600000000701", "Совместное предприятие Фаргус;7728651480");
-        payerData.put("40807810100000000049", "Товарищество с огранич. ответственностью Ситфарм;7733652546");
-        payerData.put("40807810500000000050", "Товарищество с огранич. ответственностью Ситфарм;7733652546");
-        payerData.put("30109810200000000013", "ПАО БАНК \"КУЗНЕЦКИЙ\";5836900162");
-        payerData.put("30109810500000000014", "АО \"Россельхозбанк\";7725114488");
-        payerData.put("30603810900000000000", "ООО \"Дойче Банк\";7702216772");
-        payerData.put("40702810900000001097", "Открытое акционерное общество \"Старомосковский государственный завод" +
-                " по изготовлению стеклянных, оловянных, деревянных, металлических, а также пластиковых изделий" +
-                " повышенной прочности\";7529690285");
-        payerData.put("40702810900000001084", "Закрытое акционерное общество Веселый молочник, занимающееся" +
-                " производством, переработкой и сбытом молочной продукции, такой как молоко, кефир, ряженка," +
-                " творог, йогурт и прочее;7393443311");
-        payerData.put("30231810000000000000", "DEUTSCHE BANK  AG LONDON;8446808825");
-        payerData.put("30402810100000000001", "DEUTSCHE BANK  AG LONDON;8446808825");
+        return document;
     }
 
     private LocalDate parseDate(String str) {
@@ -96,12 +69,22 @@ public class Document {
         return String.format("%.2f", doubleAmount).replace(",", ".");
     }
 
+    /*private String parseTax(String purpose) {
+        Matcher matcher1 = taxPattern1.matcher(purpose);
+        Matcher matcher2 = taxPattern2.matcher(purpose);
+        Matcher mt = (matcher1.find()) ? matcher1 : (matcher2.find()) ? matcher2 : null;
+        if (mt != null) {
+
+        }
+    }*/
+
     @Override
     public String toString() {
         return "Document{" +
                 "number='" + number + '\'' +
-                ", payerName='" + payerName + '\'' +
                 ", payerInn='" + payerInn + '\'' +
+                ", dirtyPurpose='" + dirtyPurpose + '\'' +
+                ", purpose='" + purpose + '\'' +
                 '}';
     }
 }
