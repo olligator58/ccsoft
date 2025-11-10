@@ -3,16 +3,12 @@ package ru.bis.cc.document;
 import ru.bis.cc.utils.CodeWordsExtractor;
 import ru.bis.cc.utils.PayerInfo;
 import ru.bis.cc.utils.PayerInfoType;
+import ru.bis.cc.utils.TaxExtractor;
 
 import java.time.LocalDate;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class Document {
     private static final String OUR_CORR_ACCT = "30102810300000000101";
-    private static final Pattern taxPattern1 = Pattern.compile("//(\\d*)/(\\d*)/(\\d*)/(\\d*)/([А-Я]*)/([А-Я\\d.]*)/([\\d;\\-№]*)/([\\d.]*)/?(.*)?/");
-    //проверить нужна ли здесь обработка поля 110
-    private static final Pattern taxPattern2 = Pattern.compile("\\\\\\\\(\\d*)\\\\(\\d*)\\\\(\\d*)\\\\(\\d*)\\\\([А-Я]*)\\\\([А-Я\\d\\.]*)\\\\([\\d;\\-№]*)\\\\([\\d\\.]*)\\\\");
 
     private String number;
     private LocalDate date;
@@ -23,8 +19,17 @@ public class Document {
     private String payerAccount;
     private String payerName;
     private String payerInn;
+    private String payeeBankBic;
+    private String payeeBankAccount;
+    private String payeeAccount;
+    private String payeeName;
+    private String payeeInn;
     private String dirtyPurpose;
     private String purpose;
+    private String uin;
+    private String priority;
+    private String codePurpose;
+    private String reference;
     private String tax101;
     private String tax102;
     private String tax103;
@@ -36,55 +41,166 @@ public class Document {
     private String tax109;
     private String tax110;
 
+    public String getTax110() {
+        return tax110;
+    }
+
+    public void setTax101(String tax101) {
+        this.tax101 = tax101;
+    }
+
+    public void setTax102(String tax102) {
+        this.tax102 = tax102;
+    }
+
+    public void setTax104(String tax104) {
+        this.tax104 = tax104;
+    }
+
+    public void setTax105(String tax105) {
+        this.tax105 = tax105;
+    }
+
+    public void setTax106(String tax106) {
+        this.tax106 = tax106;
+    }
+
+    public void setTax107(String tax107) {
+        this.tax107 = tax107;
+    }
+
+    public void setTax108(String tax108) {
+        this.tax108 = tax108;
+    }
+
+    public void setTax109(String tax109) {
+        this.tax109 = tax109;
+    }
+
+    public void setTax110(String tax110) {
+        this.tax110 = tax110;
+    }
+
     public Document buildDocument(String line) {
         Document document = new Document();
         number = line.substring(370, 380).trim();
-        date = parseDate(line.substring(336, 344).trim());
+        date = extractDate(line);
         deliveryType = (line.startsWith("CLMOS")) ? "Электронно" : "Срочно";
         debitAcct = line.substring(380, 400).trim();
         creditAcct = OUR_CORR_ACCT;
-        amount = formatAmount(line.substring(115, 133).trim());
+        amount = extractAmount(line);
         payerAccount = debitAcct;
         payerName = line.substring(592, 752).trim();
         dirtyPurpose = line.substring(2124, Math.min(line.length(), 2264)).trim() + line.substring(1364, 1564).trim();
-        payerInn = CodeWordsExtractor.getInn(dirtyPurpose);
-        if (payerInn.isBlank()) {
+        payerInn = CodeWordsExtractor.extractInn(dirtyPurpose);
+        if (payerInn == null || payerInn.isBlank()) {
             payerInn = PayerInfo.getPayerInfo(payerAccount, PayerInfoType.INN);
         }
+        payeeBankBic = line.substring(1595, 1604).trim();
+        payeeBankAccount = line.substring(1564, 1584).trim();
+        payeeAccount = line.substring(1764, 1784).trim();
+        payeeInn = extractPayeeInn(line);
+        payeeName = line.substring(1827, 2124).trim();
         purpose = CodeWordsExtractor.removeInn(dirtyPurpose);
+        purpose = TaxExtractor.parseTax(purpose, this);
+        //перезаписываем поле 110 значением из кодового слова
+        if (CodeWordsExtractor.extractTax110(purpose) != null) {
+            tax110 = CodeWordsExtractor.extractTax110(purpose);
+            purpose = CodeWordsExtractor.removeTax110(purpose);
+        }
+        tax103 = extractTax103(line);
+        uin = extractUin(line);
+        if (uin == null || uin.isBlank()) {
+            uin = CodeWordsExtractor.extractUin(purpose);
+        }
+        purpose = CodeWordsExtractor.removeUin(purpose);
+        codePurpose = CodeWordsExtractor.extractCodePurpose(purpose);
+        purpose = CodeWordsExtractor.removeCodePurpose(purpose);
+        priority = line.substring(484, 486).trim();
+        reference = extractReference(line);
 
         return document;
     }
 
-    private LocalDate parseDate(String str) {
+    private LocalDate extractDate(String line) {
+        String str = line.substring(336, 344).trim();
         int year = Integer.parseInt(str.substring(0, 4));
         int month = Integer.parseInt(str.substring(4, 6));
         int day = Integer.parseInt(str.substring(6));
-        LocalDate date = LocalDate.of(year, month, day);
-        return date;
+        return LocalDate.of(year, month, day);
     }
 
-    private String formatAmount(String amount) {
+    private String extractAmount(String line) {
+        String amount = line.substring(115, 133).trim();
         Double doubleAmount = (Double.parseDouble(amount) / 1000);
         return String.format("%.2f", doubleAmount).replace(",", ".");
     }
 
-    /*private String parseTax(String purpose) {
-        Matcher matcher1 = taxPattern1.matcher(purpose);
-        Matcher matcher2 = taxPattern2.matcher(purpose);
-        Matcher mt = (matcher1.find()) ? matcher1 : (matcher2.find()) ? matcher2 : null;
-        if (mt != null) {
-
+    private String extractTax103(String line) {
+        String str = line.substring(1795, 1827).trim();
+        if (str.contains("/")) {
+            return str.substring(str.indexOf('/') + 4);
         }
-    }*/
+        return null;
+    }
+
+    private String extractPayeeInn(String line) {
+        String str = line.substring(1795, 1827).trim();
+        if (str.contains("/")) {
+            return str.substring(0, str.indexOf("/"));
+        }
+        return str;
+    }
+
+    private String extractUin(String line) {
+        if (line.length() > 2264) {
+            String str = line.substring(2264, Math.min(line.length(), 2294)).trim();
+            if (str.startsWith("/ROC/")) {
+                return str.substring(5);
+            }
+        }
+        return null;
+    }
+
+    private String extractReference(String line) {
+        if (line.length() > 2574) {
+            return line.substring(2574).trim();
+        }
+        return null;
+    }
 
     @Override
     public String toString() {
         return "Document{" +
                 "number='" + number + '\'' +
+                ", date=" + date +
+                ", deliveryType='" + deliveryType + '\'' +
+                ", debitAcct='" + debitAcct + '\'' +
+                ", creditAcct='" + creditAcct + '\'' +
+                ", amount='" + amount + '\'' +
+                ", payerAccount='" + payerAccount + '\'' +
+                ", payerName='" + payerName + '\'' +
                 ", payerInn='" + payerInn + '\'' +
-                ", dirtyPurpose='" + dirtyPurpose + '\'' +
+                ", payeeBankBic='" + payeeBankBic + '\'' +
+                ", payeeBankAccount='" + payeeBankAccount + '\'' +
+                ", payeeAccount='" + payeeAccount + '\'' +
+                ", payeeName='" + payeeName + '\'' +
+                ", payeeInn='" + payeeInn + '\'' +
                 ", purpose='" + purpose + '\'' +
+                ", uin='" + uin + '\'' +
+                ", priority='" + priority + '\'' +
+                ", codePurpose='" + codePurpose + '\'' +
+                ", reference='" + reference + '\'' +
+                ", tax101='" + tax101 + '\'' +
+                ", tax102='" + tax102 + '\'' +
+                ", tax103='" + tax103 + '\'' +
+                ", tax104='" + tax104 + '\'' +
+                ", tax105='" + tax105 + '\'' +
+                ", tax106='" + tax106 + '\'' +
+                ", tax107='" + tax107 + '\'' +
+                ", tax108='" + tax108 + '\'' +
+                ", tax109='" + tax109 + '\'' +
+                ", tax110='" + tax110 + '\'' +
                 '}';
     }
 }

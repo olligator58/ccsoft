@@ -29,7 +29,7 @@ public class InitialOperation103 {
         payerAccount = line.substring(380, 400).trim();
         payerName = line.substring(592, 752).trim();
         payerInn = PayerInfo.getPayerInfo(payerAccount, PayerInfoType.INN);
-        if (payerInn.isBlank()) {
+        if (payerInn == null || payerInn.isBlank()) {
             payerInn = PAYER_INN;
         }
         payeeAccount = line.substring(1764, 1784).trim();

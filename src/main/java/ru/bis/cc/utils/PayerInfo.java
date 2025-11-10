@@ -16,7 +16,7 @@ public class PayerInfo {
             String[] data = info.split(";");
             return data[infoType.ordinal()].trim();
         }
-        return "";
+        return null;
     }
 
     private static void preparePayerInfo() {
