@@ -13,6 +13,7 @@ public class Document {
     private String number;
     private LocalDate date;
     private String deliveryType;
+    private boolean isUrgent;
     private String debitAcct;
     private String creditAcct;
     private String amount;
@@ -40,6 +41,35 @@ public class Document {
     private String tax108;
     private String tax109;
     private String tax110;
+    private boolean isTax;
+
+    public String getNumber() {
+        return number;
+    }
+
+    public String getPayerInn() {
+        return payerInn;
+    }
+
+    public String getPayerName() {
+        return payerName;
+    }
+
+    public String getPayerAccount() {
+        return payerAccount;
+    }
+
+    public LocalDate getDate() {
+        return date;
+    }
+
+    public boolean isUrgent() {
+        return isUrgent;
+    }
+
+    public boolean isTax() {
+        return isTax;
+    }
 
     public String getTax110() {
         return tax110;
@@ -81,11 +111,16 @@ public class Document {
         this.tax110 = tax110;
     }
 
+    public void setTax(boolean tax) {
+        isTax = tax;
+    }
+
     public Document buildDocument(String line) {
         Document document = new Document();
         number = line.substring(370, 380).trim();
         date = extractDate(line);
         deliveryType = (line.startsWith("CLMOS")) ? "Электронно" : "Срочно";
+        isUrgent = "Срочно".equals(deliveryType);
         debitAcct = line.substring(380, 400).trim();
         creditAcct = OUR_CORR_ACCT;
         amount = extractAmount(line);
@@ -201,6 +236,7 @@ public class Document {
                 ", tax108='" + tax108 + '\'' +
                 ", tax109='" + tax109 + '\'' +
                 ", tax110='" + tax110 + '\'' +
+                ", isTax='" + isTax + '\'' +
                 '}';
     }
 }

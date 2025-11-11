@@ -3,6 +3,8 @@ package ru.bis.cc;
 Размножаем входящий ED101
  */
 
+import ru.bis.cc.utils.FileHelper;
+
 import java.io.*;
 import java.nio.charset.Charset;
 import java.nio.file.Path;

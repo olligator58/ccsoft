@@ -4,6 +4,8 @@ package ru.bis.cc;
 В FT14 заменяем реквизиты получателя для налоговых документов
  */
 
+import ru.bis.cc.utils.FileHelper;
+
 import java.io.*;
 import java.nio.charset.Charset;
 import java.nio.file.Path;

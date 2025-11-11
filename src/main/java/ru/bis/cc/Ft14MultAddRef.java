@@ -4,6 +4,8 @@ package ru.bis.cc;
 Размножаем FT14
  */
 
+import ru.bis.cc.utils.FileHelper;
+
 import java.io.*;
 import java.nio.charset.Charset;
 import java.nio.file.Path;

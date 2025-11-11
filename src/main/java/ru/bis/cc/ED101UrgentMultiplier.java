@@ -4,6 +4,8 @@ package ru.bis.cc;
 Размножаем входящие срочные ED101
  */
 
+import ru.bis.cc.utils.FileHelper;
+
 import java.io.*;
 import java.nio.charset.Charset;
 import java.nio.file.DirectoryStream;

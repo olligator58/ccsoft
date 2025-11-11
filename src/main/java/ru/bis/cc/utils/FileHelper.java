@@ -1,4 +1,4 @@
-package ru.bis.cc;
+package ru.bis.cc.utils;
 
 import javax.swing.*;
 import java.awt.event.WindowEvent;
