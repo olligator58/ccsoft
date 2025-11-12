@@ -5,22 +5,22 @@ import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;
 
 @XmlAccessorType(XmlAccessType.NONE)
-public class OrgId {
-    @XmlElement(name = "Othr")
-    private Othr othr;
+public class ClrSysMmbId {
+    @XmlElement(name = "MmbId")
+    private String mmbId;
 
-    public Othr getOthr() {
-        return othr;
+    public String getMmbId() {
+        return mmbId;
     }
 
-    public void setOthr(Othr othr) {
-        this.othr = othr;
+    public void setMmbId(String payerBankBic) {
+        this.mmbId = payerBankBic;
     }
 
     @Override
     public String toString() {
-        return "OrgId{" +
-                "othr=" + othr +
+        return "ClrSysMmbId{" +
+                "mmbId='" + mmbId + '\'' +
                 '}';
     }
 }

@@ -9,6 +9,8 @@ import java.time.LocalDate;
 
 public class Document {
     private static final String OUR_CORR_ACCT = "30102810300000000101";
+    private static final String OUR_BANK_NAME = "ООО \"Дойче Банк\"";
+    private static final String OUR_BANK_BIC = "044525101";
 
     private String number;
     private LocalDate date;
@@ -20,6 +22,8 @@ public class Document {
     private String payerAccount;
     private String payerName;
     private String payerInn;
+    private String payerBankName;
+    private String payerBankBic;
     private String payeeBankBic;
     private String payeeBankAccount;
     private String payeeAccount;
@@ -57,6 +61,14 @@ public class Document {
 
     public String getPayerAccount() {
         return payerAccount;
+    }
+
+    public String getPayerBankName() {
+        return payerBankName;
+    }
+
+    public String getPayerBankBic() {
+        return payerBankBic;
     }
 
     public LocalDate getDate() {
@@ -126,6 +138,8 @@ public class Document {
         amount = extractAmount(line);
         payerAccount = debitAcct;
         payerName = line.substring(592, 752).trim();
+        payerBankName = OUR_BANK_NAME;
+        payerBankBic = OUR_BANK_BIC;
         dirtyPurpose = line.substring(2124, Math.min(line.length(), 2264)).trim() + line.substring(1364, 1564).trim();
         payerInn = CodeWordsExtractor.extractInn(dirtyPurpose);
         if (payerInn == null || payerInn.isBlank()) {
