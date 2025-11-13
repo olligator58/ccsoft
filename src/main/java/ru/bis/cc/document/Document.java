@@ -49,8 +49,20 @@ public class Document {
         return number;
     }
 
+    public LocalDate getDate() {
+        return date;
+    }
+
     public String getAmount() {
         return amount;
+    }
+
+    public boolean isUrgent() {
+        return isUrgent;
+    }
+
+    public String getPriority() {
+        return priority;
     }
 
     public String getPayerInn() {
@@ -97,16 +109,48 @@ public class Document {
         return payeeBankAccount;
     }
 
-    public LocalDate getDate() {
-        return date;
-    }
-
-    public boolean isUrgent() {
-        return isUrgent;
+    public String getCodePurpose() {
+        return codePurpose;
     }
 
     public boolean isTax() {
         return isTax;
+    }
+
+    public String getTax101() {
+        return tax101;
+    }
+
+    public String getTax102() {
+        return tax102;
+    }
+
+    public String getTax103() {
+        return tax103;
+    }
+
+    public String getTax104() {
+        return tax104;
+    }
+
+    public String getTax105() {
+        return tax105;
+    }
+
+    public String getTax106() {
+        return tax106;
+    }
+
+    public String getTax107() {
+        return tax107;
+    }
+
+    public String getTax108() {
+        return tax108;
+    }
+
+    public String getTax109() {
+        return tax109;
     }
 
     public String getTax110() {

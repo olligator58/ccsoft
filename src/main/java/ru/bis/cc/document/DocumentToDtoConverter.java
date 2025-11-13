@@ -2,7 +2,12 @@ package ru.bis.cc.document;
 
 import ru.bis.cc.dto.*;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 public class DocumentToDtoConverter {
+    private static final int MAX_PAYEE_NAME = 140;
+    private static final String PAYEE_BANK_NAME_COUNTRY = "RU";
 
     public DocumentDto convert(Document document) {
         DocumentDto dto = new DocumentDto();
@@ -33,10 +38,20 @@ public class DocumentToDtoConverter {
         Id id2 = new Id();
         Othr othr2 = new Othr();
         Cdtr cdtr = new Cdtr();
+        PstlAdr pstlAdr1 = new PstlAdr();
         Id id3 = new Id();
         OrgId orgId1 = new OrgId();
         Othr othr3 = new Othr();
         SchmeNm schmeNm = new SchmeNm();
+        CdtrAcct cdtrAcct = new CdtrAcct();
+        Id id4 = new Id();
+        Othr othr4 = new Othr();
+        Purp purp = new Purp();
+        RgltryRptg rgltryRptg = new RgltryRptg();
+        Dtls dtls = new Dtls();
+        Tax tax = new Tax();
+        TaxCdtr taxCdtr = new TaxCdtr();
+        TaxDbtr taxDbtr = new TaxDbtr();
 
         dto.setCstmrCdtTrfInitn(cstmrCdtTrfInitn);
         cstmrCdtTrfInitn.setGrpHdr(grpHdr);
@@ -76,18 +91,83 @@ public class DocumentToDtoConverter {
         clrSysMmbId1.setMmbId(document.getPayeeBankBic());
         finInstnId1.setNm(document.getPayeeBankName());
         finInstnId1.setPstlAdr(pstlAdr);
+        pstlAdr.setCtry(PAYEE_BANK_NAME_COUNTRY);
         cdtTrfTxInf.setCdtrAgtAcct(cdtrAgtAcct);
         cdtrAgtAcct.setId(id2);
         id2.setOthr(othr2);
         othr2.setId(document.getPayeeBankAccount());
         cdtTrfTxInf.setCdtr(cdtr);
-        cdtr.setNm(document.getPayeeName());
+        cdtr.setNm(getFirstNSymbols(document.getPayeeName(), MAX_PAYEE_NAME));
+
+        if (getSymbolsAfterN(document.getPayeeName(), MAX_PAYEE_NAME) != null) {
+            cdtr.setPstlAdr(pstlAdr1);
+            pstlAdr1.setAdrLine(getSymbolsAfterN(document.getPayeeName(), MAX_PAYEE_NAME));
+        }
+
         cdtr.setId(id3);
         id3.setOrgId(orgId1);
         orgId1.setOthr(othr3);
         othr3.setId(document.getPayeeInn());
         othr3.setSchmeNm(schmeNm);
+        cdtTrfTxInf.setCdtrAcct(cdtrAcct);
+        cdtrAcct.setId(id4);
+        id4.setOthr(othr4);
+        othr4.setId(document.getPayeeAccount());
+        cdtTrfTxInf.setPurp(purp);
+        purp.setPrtry(document.getPriority());
+
+        if (document.getCodePurpose() != null) {
+            cdtTrfTxInf.setRgltryRptg(rgltryRptg);
+            rgltryRptg.setDtls(dtls);
+            dtls.setCd(document.getCodePurpose());
+        }
+
+        // подумать, может здесь добавить какое-то условие
+        cdtTrfTxInf.setTax(tax);
+
+        if (document.getTax103() != null) {
+            tax.setTaxCdtr(taxCdtr);
+            taxCdtr.setTaxTp(document.getTax103());
+        }
+
+        if (isRegnIdNeeded(document.getTax107())) {
+            taxCdtr.setRegnId(document.getTax107());
+        }
+
+        if (document.getTax102() != null) {
+            tax.setTaxDbtr(taxDbtr);
+            taxDbtr.setTaxTp(document.getTax102());
+        }
+
+        if (document.getTax105() != null) {
+            tax.setAdmstnZn(document.getTax105());
+        }
+
+        if (document.getTax108() != null) {
+            tax.setRefNb(document.getTax108());
+        }
 
         return dto;
     }
+
+    private String getFirstNSymbols(String name, int n) {
+        return name.substring(0, Math.min(name.length(), n));
+    }
+
+    private String getSymbolsAfterN(String name, int n) {
+        if (name.length() > n) {
+            return name.substring(n);
+        }
+        return null;
+    }
+
+    private boolean isRegnIdNeeded(String tax107) {
+        if (tax107 != null) {
+            Pattern pattern = Pattern.compile("^(0|\\d{8})$");
+            Matcher matcher = pattern.matcher(tax107);
+            return matcher.find();
+        }
+        return false;
+    }
+
 }

@@ -8,6 +8,8 @@ import jakarta.xml.bind.annotation.XmlElement;
 public class Cdtr {
     @XmlElement(name = "Nm")
     private String nm;
+    @XmlElement(name = "PstlAdr")
+    private PstlAdr pstlAdr;
     @XmlElement(name = "Id")
     private Id id;
 
@@ -17,6 +19,14 @@ public class Cdtr {
 
     public void setNm(String nm) {
         this.nm = nm;
+    }
+
+    public PstlAdr getPstlAdr() {
+        return pstlAdr;
+    }
+
+    public void setPstlAdr(PstlAdr pstlAdr) {
+        this.pstlAdr = pstlAdr;
     }
 
     public Id getId() {
@@ -31,6 +41,7 @@ public class Cdtr {
     public String toString() {
         return "Cdtr{" +
                 "nm='" + nm + '\'' +
+                ", pstlAdr=" + pstlAdr +
                 ", id=" + id +
                 '}';
     }
