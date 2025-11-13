@@ -24,6 +24,8 @@ public class PmtInf {
     private DbtrAcct dbtrAcct;
     @XmlElement(name = "DbtrAgt")
     private DbtrAgt dbtrAgt;
+    @XmlElement(name = "CdtTrfTxInf")
+    private CdtTrfTxInf cdtTrfTxInf;
 
     public String getPmtInfId() {
         return pmtInfId;
@@ -89,6 +91,14 @@ public class PmtInf {
         this.dbtrAgt = dbtrAgt;
     }
 
+    public CdtTrfTxInf getCdtTrfTxInf() {
+        return cdtTrfTxInf;
+    }
+
+    public void setCdtTrfTxInf(CdtTrfTxInf cdtTrfTxInf) {
+        this.cdtTrfTxInf = cdtTrfTxInf;
+    }
+
     @Override
     public String toString() {
         return "PmtInf{" +
@@ -100,6 +110,7 @@ public class PmtInf {
                 ", dbtr=" + dbtr +
                 ", dbtrAcct=" + dbtrAcct +
                 ", dbtrAgt=" + dbtrAgt +
+                ", cdtTrfTxInf=" + cdtTrfTxInf +
                 '}';
     }
 }

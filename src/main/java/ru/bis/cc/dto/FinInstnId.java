@@ -10,6 +10,8 @@ public class FinInstnId {
     private ClrSysMmbId clrSysMmbId;
     @XmlElement(name = "Nm")
     private String nm;
+    @XmlElement(name = "PstlAdr")
+    private PstlAdr pstlAdr;
 
     public ClrSysMmbId getClrSysMmbId() {
         return clrSysMmbId;
@@ -27,11 +29,20 @@ public class FinInstnId {
         this.nm = payerBankName;;
     }
 
+    public PstlAdr getPstlAdr() {
+        return pstlAdr;
+    }
+
+    public void setPstlAdr(PstlAdr pstlAdr) {
+        this.pstlAdr = pstlAdr;
+    }
+
     @Override
     public String toString() {
         return "FinInstnId{" +
                 "clrSysMmbId=" + clrSysMmbId +
                 ", nm='" + nm + '\'' +
+                ", pstlAdr=" + pstlAdr +
                 '}';
     }
 }

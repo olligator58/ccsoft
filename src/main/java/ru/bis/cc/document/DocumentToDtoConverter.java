@@ -22,6 +22,21 @@ public class DocumentToDtoConverter {
         DbtrAgt dbtrAgt = new DbtrAgt();
         FinInstnId finInstnId = new FinInstnId();
         ClrSysMmbId clrSysMmbId = new ClrSysMmbId();
+        CdtTrfTxInf cdtTrfTxInf = new CdtTrfTxInf();
+        PmtId pmtId = new PmtId();
+        Amt amt = new Amt();
+        CdtrAgt cdtrAgt = new CdtrAgt();
+        FinInstnId finInstnId1 = new FinInstnId();
+        ClrSysMmbId clrSysMmbId1 = new ClrSysMmbId();
+        PstlAdr pstlAdr = new PstlAdr();
+        CdtrAgtAcct cdtrAgtAcct = new CdtrAgtAcct();
+        Id id2 = new Id();
+        Othr othr2 = new Othr();
+        Cdtr cdtr = new Cdtr();
+        Id id3 = new Id();
+        OrgId orgId1 = new OrgId();
+        Othr othr3 = new Othr();
+        SchmeNm schmeNm = new SchmeNm();
 
         dto.setCstmrCdtTrfInitn(cstmrCdtTrfInitn);
         cstmrCdtTrfInitn.setGrpHdr(grpHdr);
@@ -50,6 +65,28 @@ public class DocumentToDtoConverter {
         clrSysMmbId.setMmbId(document.getPayerBankBic());
         finInstnId.setClrSysMmbId(clrSysMmbId);
         finInstnId.setNm(document.getPayerBankName());
+        pmtInf.setCdtTrfTxInf(cdtTrfTxInf);
+        cdtTrfTxInf.setPmtId(pmtId);
+        pmtId.setInstrId(document.getNumber());
+        cdtTrfTxInf.setAmt(amt);
+        amt.setInstdAmt(document.getAmount());
+        cdtTrfTxInf.setCdtrAgt(cdtrAgt);
+        cdtrAgt.setFinInstnId(finInstnId1);
+        finInstnId1.setClrSysMmbId(clrSysMmbId1);
+        clrSysMmbId1.setMmbId(document.getPayeeBankBic());
+        finInstnId1.setNm(document.getPayeeBankName());
+        finInstnId1.setPstlAdr(pstlAdr);
+        cdtTrfTxInf.setCdtrAgtAcct(cdtrAgtAcct);
+        cdtrAgtAcct.setId(id2);
+        id2.setOthr(othr2);
+        othr2.setId(document.getPayeeBankAccount());
+        cdtTrfTxInf.setCdtr(cdtr);
+        cdtr.setNm(document.getPayeeName());
+        cdtr.setId(id3);
+        id3.setOrgId(orgId1);
+        orgId1.setOthr(othr3);
+        othr3.setId(document.getPayeeInn());
+        othr3.setSchmeNm(schmeNm);
 
         return dto;
     }

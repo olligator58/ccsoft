@@ -1,9 +1,6 @@
 package ru.bis.cc.document;
 
-import ru.bis.cc.utils.CodeWordsExtractor;
-import ru.bis.cc.utils.PayerInfo;
-import ru.bis.cc.utils.PayerInfoType;
-import ru.bis.cc.utils.TaxExtractor;
+import ru.bis.cc.utils.*;
 
 import java.time.LocalDate;
 
@@ -25,6 +22,7 @@ public class Document {
     private String payerBankName;
     private String payerBankBic;
     private String payeeBankBic;
+    private String payeeBankName;
     private String payeeBankAccount;
     private String payeeAccount;
     private String payeeName;
@@ -51,6 +49,10 @@ public class Document {
         return number;
     }
 
+    public String getAmount() {
+        return amount;
+    }
+
     public String getPayerInn() {
         return payerInn;
     }
@@ -69,6 +71,30 @@ public class Document {
 
     public String getPayerBankBic() {
         return payerBankBic;
+    }
+
+    public String getPayeeName() {
+        return payeeName;
+    }
+
+    public String getPayeeInn() {
+        return payeeInn;
+    }
+
+    public String getPayeeAccount() {
+        return payeeAccount;
+    }
+
+    public String getPayeeBankBic() {
+        return payeeBankBic;
+    }
+
+    public String getPayeeBankName() {
+        return payeeBankName;
+    }
+
+    public String getPayeeBankAccount() {
+        return payeeBankAccount;
     }
 
     public LocalDate getDate() {
@@ -148,6 +174,7 @@ public class Document {
         payeeBankBic = line.substring(1595, 1604).trim();
         payeeBankAccount = line.substring(1564, 1584).trim();
         payeeAccount = line.substring(1764, 1784).trim();
+        payeeBankName = BankInfo.getBankName(payeeBankBic);
         payeeInn = extractPayeeInn(line);
         payeeName = line.substring(1827, 2124).trim();
         purpose = CodeWordsExtractor.removeInn(dirtyPurpose);

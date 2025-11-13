@@ -84,7 +84,8 @@ public class Ft14ToPainConverter {
             marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
             marshaller.setProperty(Marshaller.JAXB_FRAGMENT, true);
             marshaller.marshal(dto, writer);
-            return writer.toString();
+            //делаем финт ушами, вставляем атрибут Ccy="RUR"
+            return writer.toString().replace("<InstdAmt>", "<InstdAmt Ccy=\"RUR\">");
         } catch (JAXBException e) {
             FileHelper.showMessage("Ошибка при записи документа в файл !", "Ошибка", true);
             e.printStackTrace();
