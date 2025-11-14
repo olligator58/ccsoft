@@ -26,6 +26,8 @@ public class CdtTrfTxInf {
     private RgltryRptg rgltryRptg;
     @XmlElement(name = "Tax")
     private Tax tax;
+    @XmlElement(name = "RmtInf")
+    private RmtInf rmtInf;
 
     public PmtId getPmtId() {
         return pmtId;
@@ -99,6 +101,14 @@ public class CdtTrfTxInf {
         this.tax = tax;
     }
 
+    public RmtInf getRmtInf() {
+        return rmtInf;
+    }
+
+    public void setRmtInf(RmtInf rmtInf) {
+        this.rmtInf = rmtInf;
+    }
+
     @Override
     public String toString() {
         return "CdtTrfTxInf{" +
@@ -111,6 +121,7 @@ public class CdtTrfTxInf {
                 ", purp=" + purp +
                 ", rgltryRptg=" + rgltryRptg +
                 ", tax=" + tax +
+                ", rmtInf=" + rmtInf +
                 '}';
     }
 }

@@ -109,6 +109,14 @@ public class Document {
         return payeeBankAccount;
     }
 
+    public String getPurpose() {
+        return purpose;
+    }
+
+    public String getUin() {
+        return uin;
+    }
+
     public String getCodePurpose() {
         return codePurpose;
     }

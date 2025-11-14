@@ -2,12 +2,15 @@ package ru.bis.cc.document;
 
 import ru.bis.cc.dto.*;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class DocumentToDtoConverter {
     private static final int MAX_PAYEE_NAME = 140;
     private static final String PAYEE_BANK_NAME_COUNTRY = "RU";
+    private static final int MAX_PURPOSE_LENGTH = 140;
 
     public DocumentDto convert(Document document) {
         DocumentDto dto = new DocumentDto();
@@ -55,6 +58,9 @@ public class DocumentToDtoConverter {
         Rcrd rcrd = new Rcrd();
         Prd prd = new Prd();
         FrToDt frToDt = new FrToDt();
+        RmtInf rmtInf = new RmtInf();
+        Strd strd = new Strd();
+        CdtrRefInf cdtrRefInf = new CdtrRefInf();
 
         dto.setCstmrCdtTrfInitn(cstmrCdtTrfInitn);
         cstmrCdtTrfInitn.setGrpHdr(grpHdr);
@@ -196,6 +202,14 @@ public class DocumentToDtoConverter {
             cdtTrfTxInf.setTax(tax);
         }
 
+        cdtTrfTxInf.setRmtInf(rmtInf);
+        rmtInf.setUstrd(prepareUstrd(document.getPurpose()));
+
+        if (document.getUin() != null) {
+            rmtInf.setStrd(strd);
+            strd.setCdtrRefInf(cdtrRefInf);
+            cdtrRefInf.setRef(document.getUin());
+        }
 
         return dto;
     }
@@ -272,5 +286,18 @@ public class DocumentToDtoConverter {
             }
         }
         return null;
+    }
+
+    private List<String> prepareUstrd(String purpose) {
+        List<String> lines = new ArrayList<>();
+        while (purpose.length() > 0) {
+            int index = Math.min(purpose.length(), MAX_PURPOSE_LENGTH);
+            lines.add(purpose.substring(0, index));
+            if (index == purpose.length()) {
+                break;
+            }
+            purpose = purpose.substring(index);
+        }
+        return lines;
     }
 }
