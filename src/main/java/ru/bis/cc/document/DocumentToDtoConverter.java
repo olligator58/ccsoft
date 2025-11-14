@@ -52,6 +52,9 @@ public class DocumentToDtoConverter {
         Tax tax = new Tax();
         TaxCdtr taxCdtr = new TaxCdtr();
         TaxDbtr taxDbtr = new TaxDbtr();
+        Rcrd rcrd = new Rcrd();
+        Prd prd = new Prd();
+        FrToDt frToDt = new FrToDt();
 
         dto.setCstmrCdtTrfInitn(cstmrCdtTrfInitn);
         cstmrCdtTrfInitn.setGrpHdr(grpHdr);
@@ -122,8 +125,6 @@ public class DocumentToDtoConverter {
             dtls.setCd(document.getCodePurpose());
         }
 
-        // подумать, может здесь добавить какое-то условие
-        cdtTrfTxInf.setTax(tax);
 
         if (document.getTax103() != null) {
             tax.setTaxCdtr(taxCdtr);
@@ -146,6 +147,55 @@ public class DocumentToDtoConverter {
         if (document.getTax108() != null) {
             tax.setRefNb(document.getTax108());
         }
+
+        if (convertTax109(document.getTax109()) != null) {
+            tax.setDt(convertTax109(document.getTax109()));
+        }
+
+
+        if (document.getTax110() != null) {
+            rcrd.setTp(document.getTax110());
+        }
+
+        if (document.getTax106() != null) {
+            rcrd.setCtgy(document.getTax106());
+        }
+
+        if (document.getTax104() != null) {
+            rcrd.setCtgyDtls(document.getTax104());
+        }
+
+        if (document.getTax101() != null) {
+            rcrd.setDbtrSts(document.getTax101());
+        }
+
+
+        if (convertToYr(document.getTax107()) != null) {
+            prd.setYr(convertToYr(document.getTax107()));
+        }
+
+        if (convertToTp(document.getTax107()) != null) {
+            prd.setTp(convertToTp(document.getTax107()));
+        }
+
+        if (convertToFrToDt(document.getTax107()) != null) {
+            prd.setFrToDt(frToDt);
+            frToDt.setFrDt(convertToFrToDt(document.getTax107()));
+            frToDt.setToDt(convertToFrToDt(document.getTax107()));
+        }
+
+        if (prd.isPrdToOutput()) {
+            rcrd.setPrd(prd);
+        }
+
+        if (rcrd.isRcrdToOutput()) {
+            tax.setRcrd(rcrd);
+        }
+
+        if (tax.isTaxToOutput()) {
+            cdtTrfTxInf.setTax(tax);
+        }
+
 
         return dto;
     }
@@ -170,4 +220,57 @@ public class DocumentToDtoConverter {
         return false;
     }
 
+    private String convertTax109(String tax109) {
+        if (tax109 != null) {
+            Pattern pattern = Pattern.compile("^(\\d+)\\.(\\d+)\\.(\\d+)$");
+            Matcher matcher = pattern.matcher(tax109);
+            if (matcher.find()) {
+                return matcher.group(3) + "-" + matcher.group(2) + "-" + matcher.group(1);
+            }
+            return tax109;
+        }
+        return null;
+    }
+
+    private String convertToYr(String tax107) {
+        if (tax107 != null) {
+            Pattern pattern = Pattern.compile("^(МС|КВ|ПЛ|ГД)\\.(\\d+)\\.(\\d+)$");
+            Matcher matcher = pattern.matcher(tax107);
+            if (matcher.find()) {
+                return matcher.group(3) + "-01-01";
+            }
+        }
+        return null;
+    }
+
+    private String convertToTp(String tax107) {
+        if (tax107 != null) {
+            Pattern pattern = Pattern.compile("^(МС|КВ|ПЛ)\\.(\\d+)\\.(\\d+)$");
+            Matcher matcher = pattern.matcher(tax107);
+            if (matcher.find()) {
+                if ("МС".equals(matcher.group(1))) {
+                    return "MM" + matcher.group(2);
+                } else if ("КВ".equals(matcher.group(1))) {
+                    return "QTR" + matcher.group(2).substring(1);
+                } else {    //ПЛ
+                    return "HLF" + matcher.group(2).substring(1);
+                }
+            }
+
+        }
+        return null;
+    }
+
+    private String convertToFrToDt(String tax107) {
+        if (tax107 != null) {
+            Pattern pattern1 = Pattern.compile("^(МС|КВ|ПЛ|ГД)\\.(\\d+)\\.(\\d+)$");
+            Pattern pattern2 = Pattern.compile("^(.{2})\\.(.{2})\\.(.{4})$");
+            Matcher bad = pattern1.matcher(tax107);
+            Matcher good = pattern2.matcher(tax107);
+            if (!bad.find() && good.find()) {
+                return good.group(3) + "-" + good.group(2) + "-" + good.group(1);
+            }
+        }
+        return null;
+    }
 }

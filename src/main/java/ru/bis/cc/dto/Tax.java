@@ -16,6 +16,8 @@ public class Tax {
     private String refNb;
     @XmlElement(name = "Dt")
     private String dt;
+    @XmlElement(name = "Rcrd")
+    private Rcrd rcrd;
 
     public TaxCdtr getTaxCdtr() {
         return taxCdtr;
@@ -57,6 +59,18 @@ public class Tax {
         this.dt = dt;
     }
 
+    public Rcrd getRcrd() {
+        return rcrd;
+    }
+
+    public void setRcrd(Rcrd rcrd) {
+        this.rcrd = rcrd;
+    }
+
+    public boolean isTaxToOutput() {
+        return (taxCdtr != null || taxDbtr != null || admstnZn != null || refNb != null || dt != null || rcrd != null);
+    }
+
     @Override
     public String toString() {
         return "Tax{" +
@@ -65,6 +79,7 @@ public class Tax {
                 ", admstnZn='" + admstnZn + '\'' +
                 ", refNb='" + refNb + '\'' +
                 ", dt='" + dt + '\'' +
+                ", rcrd=" + rcrd +
                 '}';
     }
 }
