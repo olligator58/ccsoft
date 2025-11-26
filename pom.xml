@@ -51,6 +51,11 @@
             <artifactId>jaxb-runtime</artifactId>
             <version>3.0.2</version> <!-- или более поздняя версия -->
         </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <version>5.13.4</version>
+        </dependency>
     </dependencies>
 
 
