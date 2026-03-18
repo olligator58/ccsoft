@@ -15,7 +15,7 @@ public class ED101Multiplier {
     private static final List<String> header = new ArrayList<>();
     private static final List<String> body = new ArrayList<>();
     private static final int BEGIN_COUNTER = 100;
-    private static final int NUM_OF_REPEATS = 20;
+    private static final int NUM_OF_REPEATS = 100;
     private static final String SOURCE_CODEPAGE = "Cp1251"; //Cp866 для DOS, Cp1251 для Windows-1251, KOI8_R для КОИ-8
     private static final String DEST_CODEPAGE = "Cp1251";
     private static boolean isHeader = true;

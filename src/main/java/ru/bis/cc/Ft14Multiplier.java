@@ -4,6 +4,8 @@ package ru.bis.cc;
 Размножаем FT14
  */
 
+import ru.bis.cc.utils.FileHelper;
+
 import java.io.*;
 import java.nio.charset.Charset;
 import java.nio.file.Path;
@@ -14,12 +16,12 @@ import java.util.Scanner;
 public class Ft14Multiplier {
     private static final List<String> stringsList = new ArrayList<>();
     private static final int BEGIN_COUNTER = 100;
-    private static final int NUM_OF_REPEATS = 32;
+    private static final int NUM_OF_REPEATS = 40;
     private static final String SOURCE_CODEPAGE = "ISO8859_5"; //Cp866 для DOS, Cp1251 для Windows-1251, KOI8_R для КОИ-8
     private static final String DEST_CODEPAGE = "ISO8859_5";
 
     public static void main(String[] args) {
-        String sourcePath = getSourceFile();
+        String sourcePath = FileHelper.chooseSourceFile("Выберите файл FT14");
         if (sourcePath != null) {
             String destPath = getDestinationFile(sourcePath);
             Charset charsetSource = Charset.forName(SOURCE_CODEPAGE);
@@ -39,7 +41,9 @@ public class Ft14Multiplier {
                         j++;
                     }
                 }
+                FileHelper.showMessage("Обработка завершена успешно !", "", false);
             } catch (IOException e) {
+                FileHelper.showMessage("Произошла ошибка !", "Ошибка", true);
                 e.printStackTrace();
             }
         }
